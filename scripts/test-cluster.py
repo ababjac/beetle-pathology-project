@@ -27,6 +27,7 @@ print('Condensing matrix...')
 matrix = data.values.tolist()
 n = len(matrix)
 
+#same format as returned by scipy pdist()
 condensed_matrix = [0]*round(n*(n-1) / 2)
 for j in range(0, n):
     for i in range(0, j):
