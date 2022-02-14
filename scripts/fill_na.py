@@ -66,17 +66,19 @@ labels = data.columns.tolist()
 #print(data.isnull().sum(axis=1).tolist()) # a LOT of missing values
 
 #baseline comparison
-print('Testing baseline...')
-for l in ['single', 'weighted', 'ward', 'average', 'complete']:
-    test_w_clustering(data.values.tolist(), labels, l, 'fill_0/'+l+'.png')
+# print('Testing baseline...')
+# for l in ['single', 'weighted', 'ward', 'average', 'complete']:
+#     test_w_clustering(data.values.tolist(), labels, l, 'fill_0/'+l+'.png')
 
 print('Filling NAs with fast_knn...')
 #TRYING fast_knn
 sys.setrecursionlimit(50000)
 imputed_training = fast_knn(df.values, k=10)
-
-for l in ['single', 'weighted', 'ward', 'average', 'complete']:
-    test_w_clustering(imputed_training, labels, l, 'fill_knn/'+l+'.png')
+new_data = pd.DataFrame(imputed_training, index=labels, columns=labels)
+new_data.to_csv('data/nei_dist_matrix_filled_na_KNN.csv')
+#
+# for l in ['single', 'weighted', 'ward', 'average', 'complete']:
+#     test_w_clustering(imputed_training, labels, l, 'fill_knn/'+l+'.png')
 
 ###Throwing error: "numpy.linalg.LinAlgError: SVD did not converge in Linear Least Squares"
 # print('Filling NAs with mice...')
