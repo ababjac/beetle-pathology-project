@@ -55,24 +55,32 @@ def test_w_clustering(matrix, labels, link, path):
 
     print('Calculating Chi-Squared Correlation...')
     comp = pd.crosstab(df['state_id'], df['cluster_id'])
-    #stat, p, dof = chi2_contingency(comp)
-    #print('Statistic: ', stat, ', P-value: ', p, ', Degrees of Freedom: ', dof, sep='')
+    stat, p, dof, _ = chi2_contingency(comp)
+    print('Statistic: ', stat, ', P-value: ', p, ', Degrees of Freedom: ', dof, sep='')
 
 print('Reading data...')
-data = pd.read_csv('data/distance_matrix_wtb_male_female.csv', index_col=0)
+df = pd.read_csv('data/distance_matrix_wtb_male_female.csv', index_col=0)
+data = df.fillna(0)
 labels = data.columns.tolist()
 #print(data)
 #print(data.isnull().sum(axis=1).tolist()) # a LOT of missing values
 
-LINKAGE = 'single'
+#baseline comparison
+print('Testing baseline...')
+for l in ['single', 'weighted', 'ward', 'average', 'complete']:
+    test_w_clustering(data.values.tolist(), labels, l, 'fill_0/'+l+'.png')
 
 print('Filling NAs with fast_knn...')
 #TRYING fast_knn
 sys.setrecursionlimit(50000)
-imputed_training = fast_knn(data.values, k=10)
-test_w_clustering(imputed_training, labels, LINKAGE, 'fill_knn/'+LINKAGE+'.png')
+imputed_training = fast_knn(df.values, k=10)
 
-print('Filling NAs with mice...')
-#TRYING mice
-imputed_training = mice(data.values)
-test_w_clustering(imputed_training, LINKAGE, 'fill_mice/'+LINKAGE+'.png')
+for l in ['single', 'weighted', 'ward', 'average', 'complete']:
+    test_w_clustering(imputed_training, labels, l, 'fill_knn/'+l+'.png')
+
+###Throwing error: "numpy.linalg.LinAlgError: SVD did not converge in Linear Least Squares"
+# print('Filling NAs with mice...')
+# #TRYING mice
+# imputed_training = mice(df.values)
+# for l in ['single', 'weighted', 'ward', 'average', 'complete']:
+#     test_w_clustering(imputed_training, l, 'fill_mice/'+l+'.png')

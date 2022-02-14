@@ -71,3 +71,7 @@ for elem in labels:
 
 print(states)
 df['state_id'] = states
+
+comp = pd.crosstab(df['state_id'], df['cluster_id'])
+stat, p, dof, _ = stats.chi2_contingency(comp)
+print('Statistic: ', stat, ', P-value: ', p, ', Degrees of Freedom: ', dof, sep='')
