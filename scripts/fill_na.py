@@ -8,11 +8,9 @@ from scipy.stats import chi2_contingency
 import sys
 
 
-def test_w_clustering(data, link, path):
-    labels = data.columns.tolist()
+def test_w_clustering(matrix, labels, link, path):
 
     print('Condensing matrix...')
-    matrix = data.values.tolist()
     n = len(matrix)
 
     #same format as returned by scipy pdist()
@@ -51,17 +49,18 @@ def test_w_clustering(data, link, path):
     df['state_id'] = states
 
     print('Creating Clustermap...')
-    sns.clustermap(data, row_linkage=Z, col_linkage=Z,  cmap='YlGnBu')
+    sns.clustermap(matrix, row_linkage=Z, col_linkage=Z,  cmap='YlGnBu')
     plt.savefig('images/clustermaps/'+path)
     plt.close()
 
     print('Calculating Chi-Squared Correlation...')
-    comp = pandas.crosstab(df['state_id'], df['cluster_id'])
-    stat, p, dof = chi2_contingency([comp[0].values, comp[1].values])
-    print('Statistic: ', stat, ', P-value: ', p, ', Degrees of Freedom: ', dof, sep='')
+    comp = pd.crosstab(df['state_id'], df['cluster_id'])
+    #stat, p, dof = chi2_contingency(comp)
+    #print('Statistic: ', stat, ', P-value: ', p, ', Degrees of Freedom: ', dof, sep='')
 
 print('Reading data...')
 data = pd.read_csv('data/distance_matrix_wtb_male_female.csv', index_col=0)
+labels = data.columns.tolist()
 #print(data)
 #print(data.isnull().sum(axis=1).tolist()) # a LOT of missing values
 
@@ -71,7 +70,7 @@ print('Filling NAs with fast_knn...')
 #TRYING fast_knn
 sys.setrecursionlimit(50000)
 imputed_training = fast_knn(data.values, k=10)
-test_w_clustering(imputed_training, LINKAGE, 'fill_knn/'+LINKAGE+'.png')
+test_w_clustering(imputed_training, labels, LINKAGE, 'fill_knn/'+LINKAGE+'.png')
 
 print('Filling NAs with mice...')
 #TRYING mice
