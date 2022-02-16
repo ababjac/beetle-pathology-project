@@ -6,7 +6,10 @@ import seaborn as sns
 from scipy.cluster.hierarchy import dendrogram,linkage,fcluster,set_link_color_palette, cut_tree
 from scipy.stats import chi2_contingency
 import sys
-
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
+from sklearn.linear_model import LinearRegression
+from fancyimpute import IterativeImputer as MICE
 
 def test_w_clustering(matrix, labels, link, path):
 
@@ -70,19 +73,39 @@ labels = data.columns.tolist()
 # for l in ['single', 'weighted', 'ward', 'average', 'complete']:
 #     test_w_clustering(data.values.tolist(), labels, l, 'fill_0/'+l+'.png')
 
-print('Filling NAs with fast_knn...')
-#TRYING fast_knn
-sys.setrecursionlimit(50000)
-imputed_training = fast_knn(df.values, k=10)
-new_data = pd.DataFrame(imputed_training, index=labels, columns=labels)
-new_data.to_csv('data/nei_dist_matrix_filled_na_KNN.csv')
+# print('Filling NAs with fast_knn...')
+# #TRYING fast_knn
+# sys.setrecursionlimit(50000)
+# imputed_training = fast_knn(df.values, k=10)
+# new_data = pd.DataFrame(imputed_training, index=labels, columns=labels)
+# new_data.to_csv('data/nei_dist_matrix_filled_na_KNN.csv')
 #
 # for l in ['single', 'weighted', 'ward', 'average', 'complete']:
 #     test_w_clustering(imputed_training, labels, l, 'fill_knn/'+l+'.png')
 
 ###Throwing error: "numpy.linalg.LinAlgError: SVD did not converge in Linear Least Squares"
-# print('Filling NAs with mice...')
-# #TRYING mice
-# imputed_training = mice(df.values)
-# for l in ['single', 'weighted', 'ward', 'average', 'complete']:
-#     test_w_clustering(imputed_training, l, 'fill_mice/'+l+'.png')
+print('Filling NAs with mice...')
+#TRYING mice
+
+# while True:
+#     try:
+#         imputed_training = mice(df.values)
+#         break
+#     except:
+#         continue
+
+#other possible methods
+
+#1
+#lr = LinearRegression()
+#imp = IterativeImputer(estimator=lr,missing_values=np.nan, max_iter=10, verbose=2, imputation_order='roman',random_state=0)
+#imputed_training = imp.fit_transform(df)
+
+#2
+df = df.select_dtypes(include=[np.float]).values
+imputed_training = MICE().fit_transform(df)
+
+new_data = pd.DataFrame(imputed_training, index=labels, columns=labels)
+new_data.to_csv('data/nei_dist_matrix_filled_na_mice.csv')
+for l in ['single', 'weighted', 'ward', 'average', 'complete']:
+    test_w_clustering(imputed_training, labels, l, 'fill_mice/'+l+'.png')
