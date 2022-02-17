@@ -63,49 +63,38 @@ def test_w_clustering(matrix, labels, link, path):
 
 print('Reading data...')
 df = pd.read_csv('data/distance_matrix_wtb_male_female.csv', index_col=0)
-data = df.fillna(0)
-labels = data.columns.tolist()
+#data = df.fillna(0)
+#print(df.isnull().sum(axis=1).tolist()) # a LOT of missing values
+df = df.dropna(thresh=len(df)*0.3, axis=1)
+df = df.dropna(thresh=len(df)*0.3, axis=0)
+#print(df.isnull().sum(axis=1).tolist()) # a LOT of missing values
+
+labels = df.columns.tolist()
+
 #print(data)
-#print(data.isnull().sum(axis=1).tolist()) # a LOT of missing values
 
 #baseline comparison
 # print('Testing baseline...')
 # for l in ['single', 'weighted', 'ward', 'average', 'complete']:
 #     test_w_clustering(data.values.tolist(), labels, l, 'fill_0/'+l+'.png')
 
-# print('Filling NAs with fast_knn...')
-# #TRYING fast_knn
-# sys.setrecursionlimit(50000)
-# imputed_training = fast_knn(df.values, k=10)
-# new_data = pd.DataFrame(imputed_training, index=labels, columns=labels)
-# new_data.to_csv('data/nei_dist_matrix_filled_na_KNN.csv')
-#
-# for l in ['single', 'weighted', 'ward', 'average', 'complete']:
-#     test_w_clustering(imputed_training, labels, l, 'fill_knn/'+l+'.png')
+print('Filling NAs with fast_knn...')
+#TRYING fast_knn
+sys.setrecursionlimit(50000)
+imputed_training = fast_knn(df.values, k=10)
+new_data = pd.DataFrame(imputed_training, index=labels, columns=labels)
+new_data.to_csv('data/nei_dist_matrix_filled_na_KNN2.csv')
+
+for l in ['single', 'weighted', 'ward', 'average', 'complete']:
+    test_w_clustering(imputed_training, labels, l, 'fill_knn2/'+l+'.png')
 
 ###Throwing error: "numpy.linalg.LinAlgError: SVD did not converge in Linear Least Squares"
-print('Filling NAs with mice...')
+# print('Filling NAs with mice...')
 #TRYING mice
-
-# while True:
-#     try:
-#         imputed_training = mice(df.values)
-#         break
-#     except:
-#         continue
-
-#other possible methods
-
-#1
-#lr = LinearRegression()
-#imp = IterativeImputer(estimator=lr,missing_values=np.nan, max_iter=10, verbose=2, imputation_order='roman',random_state=0)
-#imputed_training = imp.fit_transform(df)
-
-#2
-df = df.select_dtypes(include=[np.float]).values
-imputed_training = MICE().fit_transform(df)
-
-new_data = pd.DataFrame(imputed_training, index=labels, columns=labels)
-new_data.to_csv('data/nei_dist_matrix_filled_na_mice.csv')
-for l in ['single', 'weighted', 'ward', 'average', 'complete']:
-    test_w_clustering(imputed_training, labels, l, 'fill_mice/'+l+'.png')
+# df = df.select_dtypes(include=[np.float]).values
+# imputed_training = MICE().fit_transform(df)
+#
+# new_data = pd.DataFrame(imputed_training, index=labels, columns=labels)
+# new_data.to_csv('data/nei_dist_matrix_filled_na_mice.csv')
+# for l in ['single', 'weighted', 'ward', 'average', 'complete']:
+#     test_w_clustering(imputed_training, labels, l, 'fill_mice/'+l+'.png')
