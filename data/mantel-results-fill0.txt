@@ -1,0 +1,18 @@
+data/forAshley/GM05:
+r: nan, p-value: 0.0, z-score: nan
+
+data/forAshley/GM06:
+r: nan, p-value: 0.0, z-score: nan
+
+data/forAshley/GM16:
+r: -0.1748271222615142, p-value: 0.3748, z-score: -0.8937184095038289
+
+data/forAshley/GM26:
+r: 0.0748407761902492, p-value: 0.7324, z-score: 0.36987739379126006
+
+data/forAshley/GM39:
+r: nan, p-value: 0.0, z-score: nan
+
+data/forAshley/GM53:
+r: 0.42875026511658354, p-value: 0.0379, z-score: 2.1487149209333776
+
