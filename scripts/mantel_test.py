@@ -24,20 +24,52 @@ for i in range(1, 56):
 
     path = pd.read_csv(filename+'-path.txt', index_col=0).fillna(0)
     tree = pd.read_csv(filename+'-tree.txt', index_col=0).fillna(0)
+    #print(tree.values.tolist())
 
     if path.shape != tree.shape:
-        tree_array = np.array(tree, order='F')
-        tree_array.resize(path.shape)
-
-        tree = tree_array
         path = path.values
+        tree = tree.values
 
-    print(path.shape, tree.shape)
+        #print(path.shape, tree.shape)
+        if tree.shape > path.shape:
+            if path.shape[1] < path.shape[0]:
+                new_size = path.shape[1]
+            else:
+                new_size = path.shape[0]
+
+            tree_array = []
+            for i in range(new_size):
+                tmp = [tree[i][j] for j in range(new_size)]
+                tree_array.append(tmp)
+
+            tree = np.array(tree_array)
+
+        else:
+            if tree.shape[1] < tree.shape[0]:
+                new_size = tree.shape[1]
+            else:
+                new_size = tree.shape[0]
+
+            path_array = []    try:
+        r, p, z = mantel.test(path, tree)
+    except:
+        continue
+
+    OUT.write('GM'+count+':\n')
+    OUT.write('r: '+str(r)+', p-value: '+str(p)+', z-score: '+str(z)+'\n\n')
+            for i in range(new_size):
+                tmp = [path[i][j] for j in range(new_size)]
+                path_array.append(tmp)
+
+            path = np.array(path_array)
+
+    #print(path.shape, tree.shape)
+    #print(list(tree_array))
 
     try:
         r, p, z = mantel.test(path, tree)
     except:
         continue
 
-    OUT.write(filename+':\n')
+    OUT.write('GM'+count+':\n')
     OUT.write('r: '+str(r)+', p-value: '+str(p)+', z-score: '+str(z)+'\n\n')
