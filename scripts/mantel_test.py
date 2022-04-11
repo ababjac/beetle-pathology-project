@@ -13,11 +13,10 @@ DIR = 'data/imputed/'
 OUT = open('data/mantel-results-fillKNN.txt', 'w')
 
 for i in range(1, 56):
-    if i in [8, 23, 24, 25, 31, 36, 41, 44, 45, 46, 47, 52, 53]: #we are missing files apparently?
+    if i in [8, 19, 23, 24, 25, 31, 36, 41, 44, 45, 46, 47, 52]: #we are missing files apparently?
         continue
 
     if i < 10:
-        continue
         count = '0'+str(i)
     else:
         count = str(i)
