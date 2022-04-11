@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import mantel
+from scipy.spatial.distance import squareform
 
 #initial test
 #set1 = pd.read_csv('data/forAshley/GM16-path.txt', index_col=0).fillna(0)
@@ -8,14 +9,15 @@ import mantel
 #print(set1.shape, set2.shape)
 #print(mantel.test(set1.values, set2.values))
 
-DIR = 'data/forAshley/'
-OUT = open('data/mantel-results-fill0.txt', 'w')
+DIR = 'data/imputed/'
+OUT = open('data/mantel-results-fillKNN.txt', 'w')
 
 for i in range(1, 56):
-    if i in [8, 23, 24, 25, 31, 36, 41, 44, 45, 46, 47, 52]: #we are missing files apparently?
+    if i in [8, 23, 24, 25, 31, 36, 41, 44, 45, 46, 47, 52, 53]: #we are missing files apparently?
         continue
 
     if i < 10:
+        continue
         count = '0'+str(i)
     else:
         count = str(i)
@@ -24,7 +26,7 @@ for i in range(1, 56):
 
     path = pd.read_csv(filename+'-path.txt', index_col=0).fillna(0)
     tree = pd.read_csv(filename+'-tree.txt', index_col=0).fillna(0)
-    #print(tree.values.tolist())
+    #print(path.shape, tree.shape)
 
     if path.shape != tree.shape:
         path = path.values
@@ -50,24 +52,15 @@ for i in range(1, 56):
             else:
                 new_size = tree.shape[0]
 
-            path_array = []    try:
-        r, p, z = mantel.test(path, tree)
-    except:
-        continue
-
-    OUT.write('GM'+count+':\n')
-    OUT.write('r: '+str(r)+', p-value: '+str(p)+', z-score: '+str(z)+'\n\n')
+            path_array = []
             for i in range(new_size):
                 tmp = [path[i][j] for j in range(new_size)]
                 path_array.append(tmp)
 
             path = np.array(path_array)
 
-    #print(path.shape, tree.shape)
-    #print(list(tree_array))
-
     try:
-        r, p, z = mantel.test(path, tree)
+        r, p, z = mantel.test(squareform(path, checks=False), squareform(tree, checks=False))
     except:
         continue
 
