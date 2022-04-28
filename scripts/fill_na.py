@@ -62,7 +62,7 @@ def test_w_clustering(matrix, labels, link, path):
     print('Statistic: ', stat, ', P-value: ', p, ', Degrees of Freedom: ', dof, sep='')
 
 print('Reading data...')
-df = pd.read_csv('data/distance_matrix_gm_reduced.csv', index_col=0)
+df = pd.read_csv('data/distance_matrix_wtb_new.csv', index_col=0)
 #data = df.fillna(0)
 #print(df.isnull().sum(axis=1).tolist()) # a LOT of missing values
 #df = df.dropna(thresh=len(df)*0.3, axis=1)
@@ -83,7 +83,7 @@ print('Filling NAs with fast_knn...')
 sys.setrecursionlimit(50000)
 imputed_training = fast_knn(df.values, k=10)
 new_data = pd.DataFrame(imputed_training, index=labels, columns=labels)
-new_data.to_csv('data/gm_reduced_dist_matrix_filled_na_KNN.csv')
+new_data.to_csv('data/wtb_dist_matrix_filled_na_KNN_new.csv')
 
 #for l in ['single', 'weighted', 'ward', 'average', 'complete']:
 #    test_w_clustering(imputed_training, labels, l, 'fill_knn2/'+l+'.png')

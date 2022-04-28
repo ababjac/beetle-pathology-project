@@ -9,11 +9,11 @@ from scipy.spatial.distance import squareform
 #print(set1.shape, set2.shape)
 #print(mantel.test(set1.values, set2.values))
 
-DIR = 'data/imputed/'
-OUT = open('data/mantel-results-fillKNN.txt', 'w')
+DIR = 'data/larger/'
+OUT = open('data/mantel-results-larger.txt', 'w')
 
 for i in range(1, 56):
-    if i in [8, 19, 23, 24, 25, 31, 36, 41, 44, 45, 46, 47, 52]: #we are missing files apparently?
+    if i in [5, 8, 18, 19, 23, 24, 25, 31, 36, 41, 44, 45, 46, 47, 51, 52]: #we are missing files apparently?
         continue
 
     if i < 10:
@@ -24,7 +24,7 @@ for i in range(1, 56):
     filename = DIR+'GM'+count
 
     path = pd.read_csv(filename+'-path.txt', index_col=0).fillna(0)
-    tree = pd.read_csv(filename+'-tree.txt', index_col=0).fillna(0)
+    tree = pd.read_csv(filename+'-tree.txt.clean', index_col=0).fillna(0)
     #print(path.shape, tree.shape)
 
     if path.shape != tree.shape:
