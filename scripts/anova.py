@@ -1,32 +1,52 @@
 import pandas as pd
 import numpy as np
-#from skbio.stats.distance import permanova
+from skbio.stats.distance import permanova, DistanceMatrix
 
-def get_significance(df):
-    pass
-    #dm = DistanceMatrix(df)
-    #print(dm)
+def force_symmetric(matrix):
+    for i in range(matrix.shape[0]):
+        matrix[i][i] = 0.0
+        for j in range(i, matrix.shape[1]):
+            if matrix[i][j] != matrix[j][i]:
+                matrix[j][i] = matrix[i][j]
 
-def make_matrix_and_labels(df, ext):
-    df.to_csv(ext+'-dist-noheaders.csv', header=False, index=False)
+    return matrix
 
-    labels = df.columns.tolist()
+def get_significance(matrix, labels):
+    matrix = force_symmetric(matrix)
+    dm = DistanceMatrix(matrix)
+    print(dm)
 
-    states = []
-    for elem in labels:
-        state = elem.partition('_')[0]
-        states.append(state)
+    result = permanova(dm, labels)
+    print(result)
 
-    file = open(ext+'labels-noheaders.csv', 'w')
-    for state in states:
-        file.write(state+',')
+# def make_matrix_and_labels(df, ext):
+#     df.to_csv(ext+'-dist-noheaders.csv', header=False, index=False)
+#
+#     labels = df.columns.tolist()
+#
+#     states = []
+#     for elem in labels:
+#         state = elem.partition('_')[0]
+#         states.append(state)
+#
+#     file = open(ext+'labels-noheaders.csv', 'w')
+#     for state in states:
+#         file.write(state+',')
+#
+#     file.close()
 
-    file.close()
 
+gm_df = np.loadtxt('data/gm-dist-noheaders.csv', delimiter=',')
+wtb_df = np.loadtxt('data/wtb-dist-noheaders.csv', delimiter=',')
 
-gm_df = pd.read_csv('data/gm_dist_matrix_filled_na_KNN_new.csv', index_col=0)
-wtb_df = pd.read_csv('data/wtb_dist_matrix_filled_na_KNN_new.csv', index_col=0)
+gm_labels = np.loadtxt('data/gm-labels-noheaders.csv', delimiter=',', dtype=str)
+wtb_labels = np.loadtxt('data/wtb-labels-noheaders.csv', delimiter=',', dtype=str)
 
-make_matrix_and_labels(gm_df, 'gm')
-make_matrix_and_labels(wtb_df, 'wtb')
-#get_significance(gm_df)
+#print(gm_df.shape)
+#print(wtb_df.shape)
+
+#print(len(gm_labels))
+#print(len(wtb_labels))
+
+get_significance(gm_df, gm_labels)
+get_significance(wtb_df, wtb_labels)
